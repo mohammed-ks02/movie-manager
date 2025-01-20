@@ -1,82 +1,44 @@
-// src/pages/SearchPage.jsx
 import { useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
-import { searchMovies } from '../services/tmdbService';
+import { searchMoviesByQuery } from '../store/slices/moviesSlice';
 
 function SearchPage() {
   const [searchQuery, setSearchQuery] = useState('');
-  const [searchResults, setSearchResults] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
+  const dispatch = useDispatch();
+  const { searchResults, loading } = useSelector((state) => state.movies);
 
-  const handleSearch = async (e) => {
+  const handleSearch = (e) => {
     e.preventDefault();
     if (!searchQuery.trim()) return;
-
-    setLoading(true);
-    setError(null);
-
-    try {
-      // Search TMDB movies
-      const tmdbResults = await searchMovies(searchQuery);
-
-      // Search manual movies
-      const manualMovies = JSON.parse(localStorage.getItem('manualMovies') || '[]');
-      const manualResults = manualMovies.filter(movie => 
-        movie.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        (movie.description && movie.description.toLowerCase().includes(searchQuery.toLowerCase()))
-      );
-
-      // Combine and deduplicate results
-      const combinedResults = [
-        ...tmdbResults,
-        ...manualResults.map(movie => ({
-          ...movie,
-          poster_path: null, // Manual movies don't have poster paths
-          isManual: true
-        }))
-      ];
-
-      setSearchResults(combinedResults);
-    } catch (err) {
-      setError('Erreur lors de la recherche de films');
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
+    dispatch(searchMoviesByQuery(searchQuery));
   };
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <form onSubmit={handleSearch} className="mb-6 flex">
+    <div className="pt-24 px-8">
+      <form onSubmit={handleSearch} className="mb-8 flex">
         <input
           type="text"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           placeholder="Rechercher un film..."
-          className="flex-grow p-2 border rounded-l-md"
+          className="flex-grow p-3 bg-netflix-gray text-white border-2 border-netflix-light-gray rounded-l-md focus:outline-none focus:border-netflix-red"
         />
         <button
           type="submit"
-          className="bg-blue-600 text-white px-4 py-2 rounded-r-md hover:bg-blue-700"
           disabled={loading}
+          className="netflix-button rounded-r-md"
         >
           {loading ? 'Recherche...' : 'Rechercher'}
         </button>
       </form>
 
-      {error && (
-        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
-          {error}
-        </div>
-      )}
-
       {loading ? (
-        <div className="flex justify-center items-center">
-          <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-blue-500"></div>
+        <div className="flex justify-center items-center h-screen">
+          <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-netflix-red"></div>
         </div>
       ) : (
-        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4 netflix-scrollbar">
           {searchResults.length === 0 ? (
             <p className="col-span-full text-center text-gray-500">
               {searchQuery ? 'Aucun résultat trouvé' : 'Commencez à rechercher des films'}
@@ -84,28 +46,29 @@ function SearchPage() {
           ) : (
             searchResults.map(movie => (
               <Link
-                to={`/movie/${movie.id}`}
+                to={`/film/${movie.id}`}
                 key={movie.id}
-                className="hover:scale-105 transition-transform"
+                className="netflix-card"
               >
-                <div className="bg-white rounded-lg shadow-md overflow-hidden">
-                  {movie.poster_path ? (
+                <div className="bg-netflix-gray rounded-lg overflow-hidden shadow-lg">
+                  {movie.poster_path || movie.image ? (
                     <img
-                      src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
+                      src={
+                        movie.poster_path 
+                          ? `https://image.tmdb.org/t/p/w500${movie.poster_path}`
+                          : movie.image
+                      }
                       alt={movie.title}
-                      className="w-full h-64 object-cover"
+                      className="w-full h-netflix-card object-cover"
                     />
                   ) : (
-                    <div className="w-full h-64 bg-gray-200 flex items-center justify-center">
+                    <div className="w-full h-netflix-card bg-netflix-light-gray flex items-center justify-center">
                       Pas d&apos;image
                     </div>
                   )}
-                  <div className="p-3">
+                  <div className="p-4">
                     <h2 className="text-sm font-semibold truncate">{movie.title}</h2>
-                    <p className="text-xs text-gray-500">
-                      {movie.release_date?.split('-')[0] || 'Date inconnue'}
-                      {movie.isManual && ' (Ajouté manuellement)'}
-                    </p>
+                    <p className="text-xs text-gray-400">{movie.release_date?.split('-')[0]}</p>
                   </div>
                 </div>
               </Link>

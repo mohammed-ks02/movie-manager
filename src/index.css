@@ -2,14 +2,22 @@
 @tailwind components;
 @tailwind utilities;
 
-body, html {
-  margin: 0;
-  padding: 0;
-  width: 100%;
-  min-height: 100vh;
+body {
+  @apply bg-netflix-black text-white font-netflix;
 }
 
-#root {
-  width: 100%;
-  min-height: 100vh;
+.netflix-card {
+  @apply transform transition-all duration-300 hover:scale-105 hover:z-10;
+}
+
+.netflix-button {
+  @apply bg-netflix-red text-white px-4 py-2 rounded hover:bg-opacity-80;
+}
+
+.netflix-scrollbar::-webkit-scrollbar {
+  @apply w-2 bg-netflix-gray;
+}
+
+.netflix-scrollbar::-webkit-scrollbar-thumb {
+  @apply bg-netflix-red rounded;
 }
