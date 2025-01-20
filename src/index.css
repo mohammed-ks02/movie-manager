@@ -2,8 +2,13 @@
 @tailwind components;
 @tailwind utilities;
 
+html {
+  scroll-behavior: smooth;
+}
+
 body {
   @apply bg-netflix-black text-white font-netflix;
+  overflow-x: hidden;
 }
 
 .netflix-card {
@@ -11,7 +16,7 @@ body {
 }
 
 .netflix-button {
-  @apply bg-netflix-red text-white px-4 py-2 rounded hover:bg-opacity-80;
+  @apply bg-netflix-red text-white px-4 py-2 rounded hover:bg-opacity-80 transition-colors;
 }
 
 .netflix-scrollbar::-webkit-scrollbar {
