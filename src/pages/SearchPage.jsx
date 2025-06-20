@@ -40,10 +40,16 @@ function SearchPage() {
       ) : (
         <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4 netflix-scrollbar">
           {searchResults.length === 0 ? (
-            <p className="col-span-full text-center text-gray-500">
-              {searchQuery ? 'Aucun résultat trouvé' : 'Commencez à rechercher des films'}
-            </p>
-          ) : (
+  <div className="col-span-full text-center text-gray-500 mt-16">
+    {/* You can add an SVG icon here */}
+    <h3 className="text-xl font-bold">
+      {searchQuery ? 'Aucun résultat trouvé' : 'Trouvez votre prochain film préféré'}
+    </h3>
+    <p>
+      {searchQuery ? `Essayez une autre recherche pour trouver le film que vous cherchez.` : `Utilisez la barre de recherche ci-dessus pour commencer.`}
+    </p>
+  </div>
+) : (
             searchResults.map(movie => (
               <Link
                 to={`/film/${movie.id}`}
@@ -59,6 +65,7 @@ function SearchPage() {
                           : movie.image
                       }
                       alt={movie.title}
+                      loading="lazy"
                       className="w-full h-netflix-card object-cover"
                     />
                   ) : (

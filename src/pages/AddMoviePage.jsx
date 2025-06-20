@@ -1,40 +1,45 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
-import { addManualMovie } from '../store/slices/manualMoviesSlice';
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { addManualMovie } from "../store/slices/manualMoviesSlice";
+import { toast } from "react-hot-toast";
 
 function AddMoviePage() {
-  const [title, setTitle] = useState('');
-  const [description, setDescription] = useState('');
-  const [releaseDate, setReleaseDate] = useState('');
-  const [genre, setGenre] = useState('');
-  const [rating, setRating] = useState('');
-  const [error, setError] = useState('');
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
+  const [releaseDate, setReleaseDate] = useState("");
+  const [genre, setGenre] = useState("");
+  const [rating, setRating] = useState("");
+  const [error, setError] = useState("");
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
   const genres = [
-    'Action', 'Aventure', 'Comédie', 'Drame', 
-    'Fantastique', 'Horreur', 'Science-Fiction', 
-    'Thriller', 'Romance', 'Documentaire'
+    "Action",
+    "Aventure",
+    "Comédie",
+    "Drame",
+    "Fantastique",
+    "Horreur",
+    "Science-Fiction",
+    "Thriller",
+    "Romance",
+    "Documentaire",
   ];
 
   const validateForm = () => {
-    if (!title.trim()) {
-      setError('Le titre est obligatoire');
-      return false;
-    }
-    if (!description.trim()) {
-      setError('La description est obligatoire');
-      return false;
-    }
-    return true;
+    const newErrors = {};
+    if (!title.trim()) newErrors.title = "Le titre est obligatoire";
+    if (!description.trim())
+      newErrors.description = "La description est obligatoire";
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    
+
     if (!validateForm()) return;
 
     try {
@@ -46,10 +51,11 @@ function AddMoviePage() {
         genre: genre,
         rating: rating ? parseFloat(rating) : null,
         isManual: true,
-        created_at: new Date().toISOString()
+        created_at: new Date().toISOString(),
       };
 
       dispatch(addManualMovie(newMovie));
+      toast.success("Film ajouté avec succès!");
       navigate(`/film/${newMovie.id}`);
     } catch (err) {
       setError(err.message);
@@ -62,38 +68,29 @@ function AddMoviePage() {
         <h2 className="text-3xl font-bold mb-6 text-center text-white">
           Ajouter un Nouveau Film
         </h2>
-        
+
         {error && (
           <div className="bg-red-600 text-white px-4 py-3 rounded mb-4">
             {error}
           </div>
         )}
-        
+
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label className="block text-white mb-2">Titre</label>
-            <input
-              type="text"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              className="w-full p-3 bg-netflix-light-gray text-white rounded"
-              placeholder="Entrez le titre du film"
-              maxLength={100}
-            />
+            <input /* ... */ />
+            {errors.title && (
+              <p className="text-red-500 text-xs mt-1">{errors.title}</p>
+            )}
           </div>
-          
           <div>
             <label className="block text-white mb-2">Description</label>
-            <textarea
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              className="w-full p-3 bg-netflix-light-gray text-white rounded"
-              rows="4"
-              placeholder="Décrivez le film"
-              maxLength={500}
-            />
+            <textarea /* ... */ />
+            {errors.description && (
+              <p className="text-red-500 text-xs mt-1">{errors.description}</p>
+            )}
           </div>
-          
+
           <div className="grid md:grid-cols-2 gap-4">
             <div>
               <label className="block text-white mb-2">Date de sortie</label>
@@ -102,10 +99,10 @@ function AddMoviePage() {
                 value={releaseDate}
                 onChange={(e) => setReleaseDate(e.target.value)}
                 className="w-full p-3 bg-netflix-light-gray text-white rounded"
-                max={new Date().toISOString().split('T')[0]}
+                max={new Date().toISOString().split("T")[0]}
               />
             </div>
-            
+
             <div>
               <label className="block text-white mb-2">Genre</label>
               <select
@@ -114,13 +111,15 @@ function AddMoviePage() {
                 className="w-full p-3 bg-netflix-light-gray text-white rounded"
               >
                 <option value="">Sélectionnez un genre</option>
-                {genres.map(g => (
-                  <option key={g} value={g}>{g}</option>
+                {genres.map((g) => (
+                  <option key={g} value={g}>
+                    {g}
+                  </option>
                 ))}
               </select>
             </div>
           </div>
-          
+
           <div>
             <label className="block text-white mb-2">Note (optionnel)</label>
             <input
@@ -134,17 +133,14 @@ function AddMoviePage() {
               placeholder="Note sur 10"
             />
           </div>
-          
+
           <div className="flex space-x-4">
-            <button
-              type="submit"
-              className="netflix-button flex-grow"
-            >
+            <button type="submit" className="netflix-button flex-grow">
               Ajouter le Film
             </button>
             <button
               type="button"
-              onClick={() => navigate('/')}
+              onClick={() => navigate("/")}
               className="bg-gray-700 text-white px-4 py-2 rounded hover:bg-gray-600 flex-grow"
             >
               Annuler

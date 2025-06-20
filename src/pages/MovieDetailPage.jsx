@@ -1,8 +1,8 @@
-import { useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import { useDispatch, useSelector } from 'react-redux';
-import { fetchMovieDetails } from '../store/slices/moviesSlice';
-import { removeManualMovie } from '../store/slices/manualMoviesSlice';
+import { useEffect } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchMovieDetails } from "../store/slices/moviesSlice";
+import { removeManualMovie } from "../store/slices/manualMoviesSlice";
 
 function MovieDetailPage() {
   const { id } = useParams();
@@ -16,10 +16,18 @@ function MovieDetailPage() {
   }, [dispatch, id]);
 
   const handleDelete = () => {
-    const manualMovie = manualMovies.find(m => m.id === parseInt(id));
+    const manualMovie = manualMovies.find((m) => m.id === parseInt(id));
     if (manualMovie) {
-      dispatch(removeManualMovie(parseInt(id)));
-      navigate('/');
+      if (
+        window.confirm(
+          `Êtes-vous sûr de vouloir supprimer ${manualMovie.title} ?`
+        )
+      ) {
+      if (window.confirm(`Êtes-vous sûr de vouloir supprimer "${manualMovie.title}" ?`)) {
+        dispatch(removeManualMovie(parseInt(id)));
+        navigate('/');
+    }
+      }
     }
   };
 
@@ -40,7 +48,7 @@ function MovieDetailPage() {
   }
 
   const isManualMovie = currentMovie.isManual;
-  const backgroundImage = currentMovie.poster_path 
+  const backgroundImage = currentMovie.poster_path
     ? `https://image.tmdb.org/t/p/original${currentMovie.poster_path}`
     : currentMovie.image;
 
@@ -55,51 +63,55 @@ function MovieDetailPage() {
           />
         )}
 
-        <div 
+        <div
           className="p-6 flex-grow relative"
           style={{
-            backgroundImage: backgroundImage 
+            backgroundImage: backgroundImage
               ? `linear-gradient(to right, rgba(20,20,20,0.9), rgba(20,20,20,0.7)), url(${backgroundImage})`
-              : 'none',
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
+              : "none",
+            backgroundSize: "cover",
+            backgroundPosition: "center",
           }}
         >
           <div className="relative z-10">
-            <h1 className="text-3xl font-bold mb-4 text-white">{currentMovie.title}</h1>
-            
+            <h1 className="text-3xl font-bold mb-4 text-white">
+              {currentMovie.title}
+            </h1>
+
             <div className="space-y-4 text-gray-300">
               <p>{currentMovie.overview || currentMovie.description}</p>
-              
+
               <div className="grid md:grid-cols-2 gap-4 text-white bg-black/50 p-4 rounded">
                 {currentMovie.release_date && (
                   <div>
                     <strong>Date de sortie:</strong> {currentMovie.release_date}
                   </div>
                 )}
-                
+
                 {isManualMovie && currentMovie.genre && (
                   <div>
                     <strong>Genre:</strong> {currentMovie.genre}
                   </div>
                 )}
-                
+
                 {isManualMovie && currentMovie.rating !== null && (
                   <div>
                     <strong>Note:</strong> {currentMovie.rating?.toFixed(1)}/10
                   </div>
                 )}
-                
+
                 {!isManualMovie && (
                   <>
                     <div>
-                      <strong>Note:</strong> {currentMovie.vote_average?.toFixed(1)}/10
+                      <strong>Note:</strong>{" "}
+                      {currentMovie.vote_average?.toFixed(1)}/10
                     </div>
                     <div>
                       <strong>Langue:</strong> {currentMovie.original_language}
                     </div>
                     <div>
-                      <strong>Popularité:</strong> {currentMovie.popularity?.toFixed(2)}
+                      <strong>Popularité:</strong>{" "}
+                      {currentMovie.popularity?.toFixed(2)}
                     </div>
                   </>
                 )}
@@ -123,10 +135,7 @@ function MovieDetailPage() {
                   </button>
                 </>
               )}
-              <button
-                onClick={() => navigate(-1)}
-                className="netflix-button"
-              >
+              <button onClick={() => navigate(-1)} className="netflix-button">
                 Retour
               </button>
             </div>

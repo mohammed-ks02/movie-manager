@@ -17,7 +17,7 @@ export const searchMoviesByQuery = createAsyncThunk(
 
     // Search manual movies
     const manualMovies = JSON.parse(localStorage.getItem('manualMovies') || '[]');
-    const manualResults = manualMovies.filter(movie => 
+    const manualResults = manualMovies.filter(movie =>
       movie.title.toLowerCase().includes(query.toLowerCase()) ||
       (movie.description && movie.description.toLowerCase().includes(query.toLowerCase()))
     );
@@ -79,13 +79,28 @@ const moviesSlice = createSlice({
         state.loading = false;
         state.error = action.error.message;
       })
+      .addCase(searchMoviesByQuery.pending, (state) => {
+        state.loading = true;
+      })
       .addCase(searchMoviesByQuery.fulfilled, (state, action) => {
+        state.loading = false;
         state.searchResults = action.payload;
       })
+      .addCase(searchMoviesByQuery.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message;
+      })
+      .addCase(fetchMovieDetails.pending, (state) => {
+        state.loading = true;
+      })
       .addCase(fetchMovieDetails.fulfilled, (state, action) => {
+        state.loading = false;
         state.currentMovie = action.payload;
+      })
+      .addCase(fetchMovieDetails.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message;
       });
-  },
+}
 });
-
 export default moviesSlice.reducer;

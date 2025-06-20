@@ -1,28 +1,23 @@
-import { Link, useLocation } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
 
 function Navbar() {
-  const location = useLocation();
-
-  const isActive = (path) => {
-    return location.pathname === path 
-      ? 'text-netflix-red' 
-      : 'text-white hover:text-gray-300';
-  };
+  const activeClassName = "text-netflix-red";
+  const inactiveClassName = "text-white hover:text-gray-300";
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-netflix-black/90 py-4 px-8 flex justify-between items-center">
       <div className="flex items-center space-x-8">
-        <Link to="/" className="text-netflix-red text-3xl font-bold">CinéStream</Link>
+        <NavLink to="/" className="text-netflix-red text-3xl font-bold">CinéStream</NavLink>
         <div className="space-x-4">
-          <Link to="/" className={`transition-colors duration-300 ${isActive('/')}`}>
+          <NavLink to="/" className={({ isActive }) => isActive ? activeClassName : inactiveClassName}>
             Accueil
-          </Link>
-          <Link to="/recherche" className={`transition-colors duration-300 ${isActive('/recherche')}`}>
+          </NavLink>
+          <NavLink to="/recherche" className={({ isActive }) => isActive ? activeClassName : inactiveClassName}>
             Recherche
-          </Link>
-          <Link to="/ajouter" className={`transition-colors duration-300 ${isActive('/ajouter')}`}>
+          </NavLink>
+          <NavLink to="/ajouter" className={({ isActive }) => isActive ? activeClassName : inactiveClassName}>
             Ajouter Film
-          </Link>
+          </NavLink>
         </div>
       </div>
     </nav>

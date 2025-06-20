@@ -9,6 +9,9 @@ function App() {
   return (
     <Router>
       <div className="min-h-screen bg-netflix-black text-white">
+        <Toaster position="top-right" toastOptions={{
+          style: { background: '#333', color: '#fff' }
+        }} />
         <Navbar />
         <div className="container mx-auto">
           <Routes>
